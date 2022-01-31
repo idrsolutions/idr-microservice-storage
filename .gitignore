@@ -1,0 +1,9 @@
+# IDE
+.idea/
+*.iml
+.vs/
+.vscode/
+
+# Compiled
+target/
+dependency-reduced-pom.xml
