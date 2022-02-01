@@ -15,9 +15,8 @@
     </properties>
 
     <modules>
-        <module>idr-aws-storage</module>
+        <module>idr-aws-do-storage</module>
         <module>idr-oracle-storage</module>
-        <module>idr-do-storage</module>
         <module>idr-gcp-storage</module>
         <module>idr-azure-storage</module>
     </modules>

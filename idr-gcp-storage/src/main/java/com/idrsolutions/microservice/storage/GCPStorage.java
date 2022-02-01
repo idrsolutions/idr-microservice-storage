@@ -6,9 +6,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -60,10 +58,25 @@ public class GCPStorage extends BaseStorage {
         // storageprovider.gcp.credentialspath
         // storageprovider.gcp.projectid
         // storageprovider.gcp.bucketname
-        this(properties.getProperty("storageprovider.gcp.credentialspath"),
-                properties.getProperty("storageprovider.gcp.projectid"),
-                properties.getProperty("storageprovider.gcp.bucketname"),
-                properties.getProperty("storageprovider.gcp.basepath", ""));
+
+        String error = validateProperties(properties);
+        if (!error.isEmpty()) {
+            throw new IllegalStateException(error);
+        }
+
+        GoogleCredentials credentials;
+
+        try (FileInputStream fileStream = new FileInputStream(properties.getProperty("storageprovider.gcp.credentialspath"))) {
+            credentials = GoogleCredentials.fromStream(fileStream).createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+        }
+
+        this.projectID = properties.getProperty("storageprovider.gcp.projectid");
+        this.storage = StorageOptions.newBuilder().setProjectId(projectID).setCredentials(credentials).build().getService();
+        this.bucketName = properties.getProperty("storageprovider.gcp.bucketname");
+        this.basePath = properties.getProperty("storageprovider.gcp.basepath", "");
+
+        // TODO: Test
+        storage.getServiceAccount(projectID);
     }
 
     /**
@@ -86,5 +99,34 @@ public class GCPStorage extends BaseStorage {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String validateProperties(Properties propertiesFile) {
+        String error = "";
+
+        // storageprovider.gcp.credentialspath
+        String credentialspath = propertiesFile.getProperty("storageprovider.gcp.credentialspath");
+        if (credentialspath == null || credentialspath.isEmpty()) {
+            error += "storageprovider.gcp.credentialspath must have a value\n";
+        } else {
+            File credentialsFile = new File(credentialspath);
+            if (!credentialsFile.exists() || !credentialsFile.isFile() || !credentialsFile.canRead()) {
+                error += "storageprovider.gcp.credentialspath must point to a valid credentials file that can be accessed";
+            }
+        }
+
+        // storageprovider.gcp.projectid
+        String projectid = propertiesFile.getProperty("storageprovider.gcp.projectid");
+        if (projectid == null || projectid.isEmpty()) {
+            error += "storageprovider.gcp.projectid must have a value\n";
+        }
+
+        // storageprovider.gcp.bucketname
+        String bucketname = propertiesFile.getProperty("storageprovider.gcp.bucketname");
+        if (bucketname == null || bucketname.isEmpty()) {
+            error += "storageprovider.gcp.bucketname must have a value\n";
+        }
+
+        return error;
     }
 }

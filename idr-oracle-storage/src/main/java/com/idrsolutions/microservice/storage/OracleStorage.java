@@ -14,6 +14,7 @@ import com.oracle.bmc.objectstorage.responses.CreatePreauthenticatedRequestRespo
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -75,12 +76,22 @@ public class OracleStorage extends BaseStorage {
         // storageprovider.oracle.bucketname
         // storageprovider.oracle.basepath
 
-        this(Region.fromRegionId(properties.getProperty("storageprovider.oracle.region")),
-                properties.getProperty("storageprovider.oracle.ociconfigfilepath"),
-                !properties.getProperty("storageprovider.oracle.profile", "").trim().isEmpty() ? properties.getProperty("storageprovider.oracle.profile") : null,
-                properties.getProperty("storageprovider.oracle.namespace"),
-                properties.getProperty("storageprovider.oracle.bucketname"),
-                properties.getProperty("storageprovider.oracle.basepath", ""));
+        String error = validateProperties(properties);
+        if (!error.isEmpty()) {
+            throw new IllegalStateException(error);
+        }
+
+        final ConfigFileReader.ConfigFile configFile = ConfigFileReader.parse(properties.getProperty("storageprovider.oracle.ociconfigfilepath"),
+                !properties.getProperty("storageprovider.oracle.profile", "").trim().isEmpty() ? properties.getProperty("storageprovider.oracle.profile") : null);
+
+        final AuthenticationDetailsProvider provider = new ConfigFileAuthenticationDetailsProvider(configFile);
+
+        this.client = new ObjectStorageClient(provider);
+        this.client.setRegion(Region.fromRegionId(properties.getProperty("storageprovider.oracle.region")));
+
+        this.namespace = properties.getProperty("storageprovider.oracle.namespace");
+        this.bucketName = properties.getProperty("storageprovider.oracle.bucketname");
+        this.basePath = properties.getProperty("storageprovider.oracle.basepath", "");
     }
 
     /**
@@ -128,5 +139,46 @@ public class OracleStorage extends BaseStorage {
         final CreatePreauthenticatedRequestResponse response = client.createPreauthenticatedRequest(preauthenticatedRequest);
 
         return client.getEndpoint() + response.getPreauthenticatedRequest().getAccessUri();
+    }
+
+    private String validateProperties(Properties propertiesFile) {
+        String error = "";
+
+        // storageprovider.oracle.ociconfigfilepath
+        String ociconfigfilepath = propertiesFile.getProperty("storageprovider.oracle.ociconfigfilepath");
+        if (ociconfigfilepath == null || ociconfigfilepath.isEmpty()) {
+            error += "storageprovider.oracle.ociconfigfilepath must have a value\n";
+        } else {
+            File configFile = new File(ociconfigfilepath);
+            if (!configFile.exists() || !configFile.isFile() || !configFile.canRead()) {
+                error += "storageprovider.oracle.ociconfigfilepath must point to a valid config file that can be accessed";
+            }
+        }
+
+        // storageprovider.oracle.region
+        String region = propertiesFile.getProperty("storageprovider.oracle.region");
+        if (region == null || region.isEmpty()) {
+            error += "storageprovider.oracle.region must have a value\n";
+        } else {
+            try {
+                // Region.fromRegionId(region);
+            } catch (IllegalArgumentException e) {
+                error += "storageprovider.oracle.region has been set to an unknown region, please check you have entered the region correctly\n";
+            }
+        }
+
+        // storageprovider.oracle.namespace
+        String namespace = propertiesFile.getProperty("storageprovider.oracle.namespace");
+        if (namespace == null || namespace.isEmpty()) {
+            error += "storageprovider.oracle.namespace must have a value\n";
+        }
+
+        // storageprovider.oracle.bucketname
+        String bucketname = propertiesFile.getProperty("storageprovider.oracle.bucketname");
+        if (bucketname == null || bucketname.isEmpty()) {
+            error += "storageprovider.oracle.bucketname must have a value\n";
+        }
+
+        return error;
     }
 }

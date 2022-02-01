@@ -76,11 +76,19 @@ public class AzureStorage extends BaseStorage {
         // storageprovider.azure.containername
         // storageprovider.azure.basepath
 
-        this(new StorageSharedKeyCredential(properties.getProperty("storageprovider.azure.accountname"),
-                        properties.getProperty("storageprovider.azure.accountkey")),
-                properties.getProperty("storageprovider.azure.accountname"),
-                properties.getProperty("storageprovider.azure.containername"),
-                properties.getProperty("storageprovider.azure.basepath", ""));
+        String error = validateProperties(properties);
+        if (!error.isEmpty()) {
+            throw new IllegalStateException(error);
+        }
+        this.accountName = properties.getProperty("storageprovider.azure.accountname");
+        final StorageSharedKeyCredential auth = new StorageSharedKeyCredential(accountName,
+                properties.getProperty("storageprovider.azure.accountkey"));
+        this.client = new BlobServiceClientBuilder().credential(auth).endpoint("https://" + accountName + ".blob.core.windows.net").buildClient();
+
+        this.containerName = properties.getProperty("storageprovider.azure.containername");
+        this.basePath = properties.getProperty("storageprovider.azure.basepath", "");
+
+        // TODO: Check we're authenticated
     }
 
     /**
@@ -134,5 +142,29 @@ public class AzureStorage extends BaseStorage {
                 .toUrl();
 
         return blobURL.toString();
+    }
+
+    private String validateProperties(Properties propertiesFile) {
+        String error = "";
+
+        // storageprovider.azure.accountname
+        String accountname = propertiesFile.getProperty("storageprovider.azure.accountname");
+        if (accountname == null || accountname.isEmpty()) {
+            error += "storageprovider.azure.accountname must have a value\n";
+        }
+
+        // storageprovider.azure.accountkey
+        String accountkey = propertiesFile.getProperty("storageprovider.azure.accountkey");
+        if (accountkey == null || accountkey.isEmpty()) {
+            error += "storageprovider.azure.accountkey must have a value\n";
+        }
+
+        // storageprovider.azure.containername
+        String containername = propertiesFile.getProperty("storageprovider.azure.containername");
+        if (containername == null || containername.isEmpty()) {
+            error += "storageprovider.azure.containername must have a value\n";
+        }
+
+        return error;
     }
 }

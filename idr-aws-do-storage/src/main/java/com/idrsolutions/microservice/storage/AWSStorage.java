@@ -19,10 +19,12 @@ import java.util.Properties;
  * An implementation of {@link IStorage} that uses AWS S3 to store files
  */
 public class AWSStorage extends BaseStorage {
-    final AmazonS3 s3Client;
+    AmazonS3 s3Client;
 
-    protected final String bucketName;
-    protected final String basePath;
+    protected String bucketName;
+    protected String basePath;
+
+    protected AWSStorage() {};
 
     protected AWSStorage(final AmazonS3 s3Client, final String bucketName, final String basePath) {
         this.s3Client = s3Client;
@@ -62,11 +64,19 @@ public class AWSStorage extends BaseStorage {
         // storageprovider.aws.bucketname
         // storageprovider.aws.basepath
 
-        this(Regions.fromName(properties.getProperty("storageprovider.aws.region")),
-                new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.aws.accesskey"),
-                        properties.getProperty("storageprovider.aws.secretkey"))),
-                properties.getProperty("storageprovider.aws.bucketname"),
-                properties.getProperty("storageprovider.aws.basepath", ""));
+        String error = validateProperties(properties);
+        if (!error.isEmpty()) {
+            throw new IllegalStateException(error);
+        }
+
+        s3Client = AmazonS3ClientBuilder.standard().withRegion(properties.getProperty("storageprovider.aws.region")).withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.aws.accesskey"), properties.getProperty("storageprovider.aws.secretkey")))).build();
+
+        this.bucketName = properties.getProperty("storageprovider.aws.bucketname");
+        this.basePath = properties.getProperty("storageprovider.aws.basepath", "");
+
+        if (!s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
+            throw new RuntimeException("A bucket with the name " + properties.getProperty("storageprovider.aws.bucketname") + " does not exist");
+        }
     }
 
     /**
@@ -95,5 +105,41 @@ public class AWSStorage extends BaseStorage {
         final Date expiration = new Date(expTimeMillis);
 
         return s3Client.generatePresignedUrl(bucketName, basePath + uuid + "/" + fileName, expiration).toString();
+    }
+
+    private String validateProperties(final Properties propertiesFile) {
+        String error = "";
+
+        // storageprovider.aws.region
+        String region = propertiesFile.getProperty("storageprovider.aws.region");
+        if (region == null || region.isEmpty()) {
+            error += "You must set storageprovider.aws.region to the name of an aws region, Eg eu-west-1\n";
+        } else {
+            try {
+                Regions.fromName(region);
+            } catch (IllegalArgumentException e) {
+                error += "storageprovider.aws.region has been set to an unknown region, please check you have entered the region correctly\n";
+            }
+        }
+
+        // storageprovider.aws.accesskey
+        String accessKey = propertiesFile.getProperty("storageprovider.aws.accesskey");
+        if (accessKey == null || accessKey.isEmpty()) {
+            error += "storageprovider.aws.accesskey must have a value\n";
+        }
+
+        // storageprovider.aws.secretkey
+        String secretKey = propertiesFile.getProperty("storageprovider.aws.secretkey");
+        if (accessKey == null || accessKey.isEmpty()) {
+            error += "storageprovider.aws.secretkey must have a value\n";
+        }
+
+        // storageprovider.aws.bucketname
+        String bucketName = propertiesFile.getProperty("storageprovider.aws.bucketname");
+        if (accessKey == null || accessKey.isEmpty()) {
+            error += "storageprovider.aws.bucketname must have a value\n";
+        }
+
+        return error;
     }
 }
