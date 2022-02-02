@@ -9,6 +9,7 @@ import com.oracle.bmc.objectstorage.ObjectStorageClient;
 import com.oracle.bmc.objectstorage.model.CreatePreauthenticatedRequestDetails;
 import com.oracle.bmc.objectstorage.model.PreauthenticatedRequest;
 import com.oracle.bmc.objectstorage.requests.CreatePreauthenticatedRequestRequest;
+import com.oracle.bmc.objectstorage.requests.GetBucketRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.oracle.bmc.objectstorage.responses.CreatePreauthenticatedRequestResponse;
 
@@ -92,6 +93,8 @@ public class OracleStorage extends BaseStorage {
         this.namespace = properties.getProperty("storageprovider.oracle.namespace");
         this.bucketName = properties.getProperty("storageprovider.oracle.bucketname");
         this.basePath = properties.getProperty("storageprovider.oracle.basepath", "");
+
+        client.getBucket(GetBucketRequest.builder().bucketName(bucketName).namespaceName(namespace).build());
     }
 
     /**
