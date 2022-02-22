@@ -59,7 +59,7 @@ public class GCPStorage extends BaseStorage {
         // storageprovider.gcp.projectid
         // storageprovider.gcp.bucketname
 
-        String error = validateProperties(properties);
+        final String error = validateProperties(properties);
         if (!error.isEmpty()) {
             throw new IllegalStateException(error);
         }
