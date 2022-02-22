@@ -45,15 +45,15 @@ public class DigitalOceanStorage extends AWSStorage {
             throw new IllegalStateException(error);
         }
 
-        this.s3Client = AmazonS3ClientBuilder
+        super.s3Client = AmazonS3ClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://" + properties.getProperty("storageprovider.do.region") + ".digitaloceanspaces.com", properties.getProperty("storageprovider.do.region")))
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.do.accesskey"), properties.getProperty("storageprovider.do.secretkey"))))
                 .build();
-        this.bucketName = properties.getProperty("storageprovider.do.bucketname");
-        this.basePath = properties.getProperty("storageprovider.do.basepath", "");
+        super.bucketName = properties.getProperty("storageprovider.do.bucketname");
+        super.basePath = properties.getProperty("storageprovider.do.basepath", "");
 
-        if (!this.s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
+        if (!super.s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
             throw new RuntimeException("A bucket with the name " + properties.getProperty("storageprovider.aws.bucketname") + " does not exist");
         }
     }
