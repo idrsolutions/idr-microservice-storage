@@ -98,18 +98,18 @@ public class AzureStorage extends BaseStorage {
     public String put(final byte[] fileToUpload, final String fileName, final String uuid) {
         try (InputStream fileStream = new ByteArrayInputStream(fileToUpload)){
             return put(fileStream, fileToUpload.length, fileName, uuid);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.severe(e.getMessage());
             return null;
         }
     }
 
     @Override
-    public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
+    public String put(final InputStream fileToUpload, final long fileSize,  final String fileName, final String uuid) {
         BlobContainerClient containerClient;
         try {
             containerClient = client.createBlobContainer(containerName);
-        } catch (BlobStorageException e) {
+        } catch (final BlobStorageException e) {
             // The container may already exist, so don't throw an error
             if (!e.getErrorCode().equals(BlobErrorCode.CONTAINER_ALREADY_EXISTS)) {
                 LOG.severe(e.getMessage());
@@ -119,7 +119,7 @@ public class AzureStorage extends BaseStorage {
         }
 
 
-        String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
+        final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
         final String dest = basePath + uuid + "/" + fileName;
 
         final BlockBlobClient blobClient = containerClient.getBlobClient(dest).getBlockBlobClient();
@@ -148,19 +148,19 @@ public class AzureStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.azure.accountname
-        String accountname = propertiesFile.getProperty("storageprovider.azure.accountname");
+        final String accountname = propertiesFile.getProperty("storageprovider.azure.accountname");
         if (accountname == null || accountname.isEmpty()) {
             error += "storageprovider.azure.accountname must have a value\n";
         }
 
         // storageprovider.azure.accountkey
-        String accountkey = propertiesFile.getProperty("storageprovider.azure.accountkey");
+        final String accountkey = propertiesFile.getProperty("storageprovider.azure.accountkey");
         if (accountkey == null || accountkey.isEmpty()) {
             error += "storageprovider.azure.accountkey must have a value\n";
         }
 
         // storageprovider.azure.containername
-        String containername = propertiesFile.getProperty("storageprovider.azure.containername");
+        final  String containername = propertiesFile.getProperty("storageprovider.azure.containername");
         if (containername == null || containername.isEmpty()) {
             error += "storageprovider.azure.containername must have a value\n";
         }

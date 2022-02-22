@@ -58,29 +58,29 @@ public class DigitalOceanStorage extends AWSStorage {
         }
     }
 
-    private String validateProperties(Properties propertiesFile) {
+    private String validateProperties(final Properties propertiesFile) {
         String error = "";
 
         // storageprovider.do.region
-        String region = propertiesFile.getProperty("storageprovider.do.region");
+        final String region = propertiesFile.getProperty("storageprovider.do.region");
         if (region == null || region.isEmpty()) {
             error += "storageprovider.do.region must have a value\n";
         }
 
         // storageprovider.do.accesskey
-        String accesskey = propertiesFile.getProperty("storageprovider.do.accesskey");
+        final String accesskey = propertiesFile.getProperty("storageprovider.do.accesskey");
         if (accesskey == null || accesskey.isEmpty()) {
             error += "storageprovider.do.accesskey must have a value\n";
         }
 
         // storageprovider.do.secretkey
-        String secretkey = propertiesFile.getProperty("storageprovider.do.secretkey");
+        final String secretkey = propertiesFile.getProperty("storageprovider.do.secretkey");
         if (secretkey == null || secretkey.isEmpty()) {
             error += "storageprovider.do.secretkey must have a value\n";
         }
 
         // storageprovider.do.bucketname
-        String bucketname = propertiesFile.getProperty("storageprovider.do.bucketname");
+        final String bucketname = propertiesFile.getProperty("storageprovider.do.bucketname");
         if (bucketname == null || bucketname.isEmpty()) {
             error += "storageprovider.do.bucketname must have a value\n";
         }

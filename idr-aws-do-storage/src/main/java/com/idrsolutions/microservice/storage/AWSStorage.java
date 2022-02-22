@@ -86,18 +86,18 @@ public class AWSStorage extends BaseStorage {
     public String put(final byte[] fileToUpload, final String fileName, final String uuid) {
         try (InputStream fileStream = new ByteArrayInputStream(fileToUpload)){
             return put(fileStream, fileToUpload.length, fileName, uuid);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.severe(e.getMessage());
         }
         return null;
     }
 
     @Override
-    public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
+    public String put(final InputStream fileToUpload, final long fileSize, final String fileName, final String uuid) {
         final ObjectMetadata metadata = new ObjectMetadata();
         // Assume zip file
         metadata.setContentType("application/zip");
-        String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
+        final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
         s3Client.putObject(bucketName, basePath + uuid + "/" + fileName, fileToUpload, metadata);
 
         long expTimeMillis = Instant.now().toEpochMilli();
@@ -111,31 +111,32 @@ public class AWSStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.aws.region
-        String region = propertiesFile.getProperty("storageprovider.aws.region");
+        final String region = propertiesFile.getProperty("storageprovider.aws.region");
         if (region == null || region.isEmpty()) {
             error += "You must set storageprovider.aws.region to the name of an aws region, Eg eu-west-1\n";
         } else {
             try {
+                // Check it's a valid region
                 Regions.fromName(region);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 error += "storageprovider.aws.region has been set to an unknown region, please check you have entered the region correctly\n";
             }
         }
 
         // storageprovider.aws.accesskey
-        String accessKey = propertiesFile.getProperty("storageprovider.aws.accesskey");
+        final String accessKey = propertiesFile.getProperty("storageprovider.aws.accesskey");
         if (accessKey == null || accessKey.isEmpty()) {
             error += "storageprovider.aws.accesskey must have a value\n";
         }
 
         // storageprovider.aws.secretkey
-        String secretKey = propertiesFile.getProperty("storageprovider.aws.secretkey");
+        final String secretKey = propertiesFile.getProperty("storageprovider.aws.secretkey");
         if (accessKey == null || accessKey.isEmpty()) {
             error += "storageprovider.aws.secretkey must have a value\n";
         }
 
         // storageprovider.aws.bucketname
-        String bucketName = propertiesFile.getProperty("storageprovider.aws.bucketname");
+        final String bucketName = propertiesFile.getProperty("storageprovider.aws.bucketname");
         if (accessKey == null || accessKey.isEmpty()) {
             error += "storageprovider.aws.bucketname must have a value\n";
         }

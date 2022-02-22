@@ -104,7 +104,7 @@ public class OracleStorage extends BaseStorage {
     public String put(final byte[] fileToUpload, final String fileName, final String uuid) {
         try (InputStream fileStream = new ByteArrayInputStream(fileToUpload)) {
             return put(fileStream, fileToUpload.length, fileName, uuid);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.severe(e.getMessage());
         }
         return null;
@@ -112,7 +112,7 @@ public class OracleStorage extends BaseStorage {
 
     @Override
     public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
-        String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
+        final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
         final String dest = basePath + uuid + "/" + fileName;
 
         final PutObjectRequest objectRequest = PutObjectRequest.builder()
@@ -148,7 +148,7 @@ public class OracleStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.oracle.ociconfigfilepath
-        String ociconfigfilepath = propertiesFile.getProperty("storageprovider.oracle.ociconfigfilepath");
+        final String ociconfigfilepath = propertiesFile.getProperty("storageprovider.oracle.ociconfigfilepath");
         if (ociconfigfilepath == null || ociconfigfilepath.isEmpty()) {
             error += "storageprovider.oracle.ociconfigfilepath must have a value\n";
         } else {
@@ -159,25 +159,25 @@ public class OracleStorage extends BaseStorage {
         }
 
         // storageprovider.oracle.region
-        String region = propertiesFile.getProperty("storageprovider.oracle.region");
+        final String region = propertiesFile.getProperty("storageprovider.oracle.region");
         if (region == null || region.isEmpty()) {
             error += "storageprovider.oracle.region must have a value\n";
         } else {
             try {
                 // Region.fromRegionId(region);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 error += "storageprovider.oracle.region has been set to an unknown region, please check you have entered the region correctly\n";
             }
         }
 
         // storageprovider.oracle.namespace
-        String namespace = propertiesFile.getProperty("storageprovider.oracle.namespace");
+        final String namespace = propertiesFile.getProperty("storageprovider.oracle.namespace");
         if (namespace == null || namespace.isEmpty()) {
             error += "storageprovider.oracle.namespace must have a value\n";
         }
 
         // storageprovider.oracle.bucketname
-        String bucketname = propertiesFile.getProperty("storageprovider.oracle.bucketname");
+        final String bucketname = propertiesFile.getProperty("storageprovider.oracle.bucketname");
         if (bucketname == null || bucketname.isEmpty()) {
             error += "storageprovider.oracle.bucketname must have a value\n";
         }

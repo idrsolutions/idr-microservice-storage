@@ -64,7 +64,7 @@ public class GCPStorage extends BaseStorage {
             throw new IllegalStateException(error);
         }
 
-        GoogleCredentials credentials;
+        final GoogleCredentials credentials;
 
         try (FileInputStream fileStream = new FileInputStream(properties.getProperty("storageprovider.gcp.credentialspath"))) {
             credentials = GoogleCredentials.fromStream(fileStream).createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
@@ -83,7 +83,7 @@ public class GCPStorage extends BaseStorage {
      */
     @Override
     public String put(final byte[] fileToUpload, final String fileName, final String uuid) {
-        String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
+        final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
         final Blob blob = storage.create(BlobInfo.newBuilder(bucketName, basePath + uuid + "/" + fileName).build(), fileToUpload, Storage.BlobTargetOption.detectContentType());
         return blob.signUrl(30, TimeUnit.MINUTES, Storage.SignUrlOption.withV4Signature()).toString();
     }
@@ -91,10 +91,10 @@ public class GCPStorage extends BaseStorage {
     @Override
     public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
         try {
-            String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
+            final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
             final Blob blob = storage.createFrom(BlobInfo.newBuilder(bucketName, basePath + uuid + "/" + fileName).build(), fileToUpload, Storage.BlobWriteOption.detectContentType());
             return blob.signUrl(30, TimeUnit.MINUTES, Storage.SignUrlOption.withV4Signature()).toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -104,7 +104,7 @@ public class GCPStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.gcp.credentialspath
-        String credentialspath = propertiesFile.getProperty("storageprovider.gcp.credentialspath");
+        final String credentialspath = propertiesFile.getProperty("storageprovider.gcp.credentialspath");
         if (credentialspath == null || credentialspath.isEmpty()) {
             error += "storageprovider.gcp.credentialspath must have a value\n";
         } else {
@@ -115,13 +115,13 @@ public class GCPStorage extends BaseStorage {
         }
 
         // storageprovider.gcp.projectid
-        String projectid = propertiesFile.getProperty("storageprovider.gcp.projectid");
+        final String projectid = propertiesFile.getProperty("storageprovider.gcp.projectid");
         if (projectid == null || projectid.isEmpty()) {
             error += "storageprovider.gcp.projectid must have a value\n";
         }
 
         // storageprovider.gcp.bucketname
-        String bucketname = propertiesFile.getProperty("storageprovider.gcp.bucketname");
+        final String bucketname = propertiesFile.getProperty("storageprovider.gcp.bucketname");
         if (bucketname == null || bucketname.isEmpty()) {
             error += "storageprovider.gcp.bucketname must have a value\n";
         }
