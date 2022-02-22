@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * An implementation of {@link IStorage} that uses GCP Cloud Storage to store files
+ * An implementation of {@link Storage} that uses GCP Cloud Storage to store files
  */
 public class GCPStorage extends BaseStorage {
     private final Storage storage;
@@ -28,7 +28,7 @@ public class GCPStorage extends BaseStorage {
      */
     public GCPStorage(final String projectID, final String bucketName, String basePath) {
         // Will fetch from the "GOOGLE_APPLICATION_CREDENTIALS" environment variable
-        storage = StorageOptions.newBuilder().setProjectId(projectID).build().getService();
+        this.storage = StorageOptions.newBuilder().setProjectId(projectID).build().getService();
         this.projectID = projectID;
         this.bucketName = bucketName;
         this.basePath = basePath;
@@ -48,7 +48,7 @@ public class GCPStorage extends BaseStorage {
             credentials = GoogleCredentials.fromStream(fileStream).createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
         }
 
-        storage = StorageOptions.newBuilder().setProjectId(projectID).setCredentials(credentials).build().getService();
+        this.storage = StorageOptions.newBuilder().setProjectId(projectID).setCredentials(credentials).build().getService();
         this.projectID = projectID;
         this.bucketName = bucketName;
         this.basePath = basePath;
@@ -76,7 +76,7 @@ public class GCPStorage extends BaseStorage {
         this.basePath = properties.getProperty("storageprovider.gcp.basepath", "");
 
         // TODO: Test
-        storage.getServiceAccount(projectID);
+        this.storage.getServiceAccount(projectID);
     }
 
     /**

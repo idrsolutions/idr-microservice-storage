@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
- * An implementation of {@link IStorage} that uses Oracle Buckets to store files
+ * An implementation of {@link Storage} that uses Oracle Buckets to store files
  */
 public class OracleStorage extends BaseStorage {
     private final ObjectStorageClient client;
@@ -45,8 +45,8 @@ public class OracleStorage extends BaseStorage {
 
         final AuthenticationDetailsProvider provider = new ConfigFileAuthenticationDetailsProvider(configFile);
 
-        client = new ObjectStorageClient(provider);
-        client.setRegion(region);
+        this.client = new ObjectStorageClient(provider);
+        this.client.setRegion(region);
 
         this.namespace = namespace;
         this.bucketName = bucketName;
@@ -61,8 +61,8 @@ public class OracleStorage extends BaseStorage {
      * @param bucketName the name of the bucket that the converted files should be uploaded to
      */
     public OracleStorage(final Region region, final BasicAuthenticationDetailsProvider auth, final String namespace, final String bucketName, final String basePath) {
-        client = new ObjectStorageClient(auth);
-        client.setRegion(region);
+        this.client = new ObjectStorageClient(auth);
+        this.client.setRegion(region);
 
         this.namespace = namespace;
         this.bucketName = bucketName;
@@ -94,7 +94,7 @@ public class OracleStorage extends BaseStorage {
         this.bucketName = properties.getProperty("storageprovider.oracle.bucketname");
         this.basePath = properties.getProperty("storageprovider.oracle.basepath", "");
 
-        client.getBucket(GetBucketRequest.builder().bucketName(bucketName).namespaceName(namespace).build());
+        this.client.getBucket(GetBucketRequest.builder().bucketName(bucketName).namespaceName(namespace).build());
     }
 
     /**

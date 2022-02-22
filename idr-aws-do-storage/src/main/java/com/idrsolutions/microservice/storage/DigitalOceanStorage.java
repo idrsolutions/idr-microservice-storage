@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import java.util.Properties;
 
 /**
- * An implementation of {@link IStorage} that uses DigitalOcean Spaces to store files
+ * An implementation of {@link Storage} that uses DigitalOcean Spaces to store files
  * This reuses {@link AWSStorage} by chaining the endpoint as the API is compatible
  */
 public class DigitalOceanStorage extends AWSStorage {
@@ -45,15 +45,15 @@ public class DigitalOceanStorage extends AWSStorage {
             throw new IllegalStateException(error);
         }
 
-        s3Client = AmazonS3ClientBuilder
+        this.s3Client = AmazonS3ClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://" + properties.getProperty("storageprovider.do.region") + ".digitaloceanspaces.com", properties.getProperty("storageprovider.do.region")))
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.do.accesskey"), properties.getProperty("storageprovider.do.secretkey"))))
                 .build();
-        bucketName = properties.getProperty("storageprovider.do.bucketname");
-        basePath = properties.getProperty("storageprovider.do.basepath", "");
+        this.bucketName = properties.getProperty("storageprovider.do.bucketname");
+        this.basePath = properties.getProperty("storageprovider.do.basepath", "");
 
-        if (!s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
+        if (!this.s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
             throw new RuntimeException("A bucket with the name " + properties.getProperty("storageprovider.aws.bucketname") + " does not exist");
         }
     }

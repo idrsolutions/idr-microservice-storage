@@ -22,7 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.Properties;
 
 /**
- * An implementation of {@link IStorage} that uses Azure Blob Storage to store files
+ * An implementation of {@link Storage} that uses Azure Blob Storage to store files
  */
 public class AzureStorage extends BaseStorage {
     final BlobServiceClient client;

@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
- * An implementation of {@link IStorage} that uses AWS S3 to store files
+ * An implementation of {@link Storage} that uses AWS S3 to store files
  */
 public class AWSStorage extends BaseStorage {
     AmazonS3 s3Client;
@@ -39,7 +39,7 @@ public class AWSStorage extends BaseStorage {
      * @param basePath The path inside the bucket that the converted files should end up in
      */
     public AWSStorage(final Regions region, final String bucketName, final String basePath) {
-        s3Client = AmazonS3ClientBuilder.standard().withRegion(region).build();
+        this.s3Client = AmazonS3ClientBuilder.standard().withRegion(region).build();
         this.bucketName = bucketName;
         this.basePath = basePath;
     }
@@ -52,7 +52,7 @@ public class AWSStorage extends BaseStorage {
      * @param basePath The path inside the bucket that the converted files should end up in
      */
     public AWSStorage(final Regions region, final AWSCredentialsProvider credentialsProvider, final String bucketName, final String basePath) {
-        s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(credentialsProvider).build();
+        this.s3Client = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(credentialsProvider).build();
         this.bucketName = bucketName;
         this.basePath = basePath;
     }
@@ -69,12 +69,12 @@ public class AWSStorage extends BaseStorage {
             throw new IllegalStateException(error);
         }
 
-        s3Client = AmazonS3ClientBuilder.standard().withRegion(properties.getProperty("storageprovider.aws.region")).withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.aws.accesskey"), properties.getProperty("storageprovider.aws.secretkey")))).build();
+        this.s3Client = AmazonS3ClientBuilder.standard().withRegion(properties.getProperty("storageprovider.aws.region")).withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(properties.getProperty("storageprovider.aws.accesskey"), properties.getProperty("storageprovider.aws.secretkey")))).build();
 
         this.bucketName = properties.getProperty("storageprovider.aws.bucketname");
         this.basePath = properties.getProperty("storageprovider.aws.basepath", "");
 
-        if (!s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
+        if (!this.s3Client.doesBucketExistV2(properties.getProperty("storageprovider.aws.bucketname"))) {
             throw new RuntimeException("A bucket with the name " + properties.getProperty("storageprovider.aws.bucketname") + " does not exist");
         }
     }
