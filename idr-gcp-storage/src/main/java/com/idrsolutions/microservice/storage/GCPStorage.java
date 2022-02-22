@@ -75,7 +75,6 @@ public class GCPStorage extends BaseStorage {
         this.bucketName = properties.getProperty("storageprovider.gcp.bucketname");
         this.basePath = properties.getProperty("storageprovider.gcp.basepath", "");
 
-        // TODO: Test
         this.storage.getServiceAccount(projectID);
     }
 

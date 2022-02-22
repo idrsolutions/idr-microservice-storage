@@ -88,7 +88,7 @@ public class AzureStorage extends BaseStorage {
         this.containerName = properties.getProperty("storageprovider.azure.containername");
         this.basePath = properties.getProperty("storageprovider.azure.basepath", "");
 
-        // TODO: Check we're authenticated
+        this.client.getAccountInfo();
     }
 
     /**
