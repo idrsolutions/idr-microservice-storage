@@ -35,7 +35,7 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>com.idrsolutions:base-microservice-example</exclude>
-                                </excludes>AzureStorage
+                                </excludes>
                             </artifactSet>
                         </configuration>
                     </execution>
