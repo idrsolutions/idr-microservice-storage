@@ -69,7 +69,7 @@ public class OracleStorage extends BaseStorage {
         this.basePath = basePath;
     }
 
-    public OracleStorage(Properties properties) throws IOException {
+    public OracleStorage(final Properties properties) throws IOException {
         // storageprovider.oracle.region
         // storageprovider.oracle.ociconfigfilepath
         // storageprovider.oracle.profile (nullable)
@@ -77,7 +77,7 @@ public class OracleStorage extends BaseStorage {
         // storageprovider.oracle.bucketname
         // storageprovider.oracle.basepath
 
-        String error = validateProperties(properties);
+        final String error = validateProperties(properties);
         if (!error.isEmpty()) {
             throw new IllegalStateException(error);
         }
@@ -111,7 +111,7 @@ public class OracleStorage extends BaseStorage {
     }
 
     @Override
-    public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
+    public String put(final InputStream fileToUpload, final long fileSize, final String fileName, final String uuid) {
         final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
         final String dest = basePath + uuid + "/" + fileName;
 
@@ -144,7 +144,7 @@ public class OracleStorage extends BaseStorage {
         return client.getEndpoint() + response.getPreauthenticatedRequest().getAccessUri();
     }
 
-    private String validateProperties(Properties propertiesFile) {
+    private String validateProperties(final Properties propertiesFile) {
         String error = "";
 
         // storageprovider.oracle.ociconfigfilepath

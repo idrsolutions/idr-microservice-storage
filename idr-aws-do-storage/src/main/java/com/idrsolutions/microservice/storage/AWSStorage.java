@@ -64,7 +64,7 @@ public class AWSStorage extends BaseStorage {
         // storageprovider.aws.bucketname
         // storageprovider.aws.basepath
 
-        String error = validateProperties(properties);
+        final String error = validateProperties(properties);
         if (!error.isEmpty()) {
             throw new IllegalStateException(error);
         }

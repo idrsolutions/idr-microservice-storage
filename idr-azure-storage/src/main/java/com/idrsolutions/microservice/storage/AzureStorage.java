@@ -37,7 +37,7 @@ public class AzureStorage extends BaseStorage {
      * @param accountName The storage account name
      * @param containerName The name of the container within the storage account that the converted files should be uploaded to
      */
-    public AzureStorage(final StorageSharedKeyCredential auth, final String accountName, final String containerName, String basePath) {
+    public AzureStorage(final StorageSharedKeyCredential auth, final String accountName, final String containerName, final String basePath) {
         this.client = new BlobServiceClientBuilder().credential(auth).endpoint("https://" + accountName + ".blob.core.windows.net").buildClient();
         this.accountName = accountName;
         this.containerName = containerName;
@@ -50,7 +50,7 @@ public class AzureStorage extends BaseStorage {
      * @param accountName The storage account name
      * @param containerName The name of the container within the storage account
      */
-    public AzureStorage(final AzureSasCredential auth, final String accountName, final String containerName, String basePath) {
+    public AzureStorage(final AzureSasCredential auth, final String accountName, final String containerName, final String basePath) {
         this.client = new BlobServiceClientBuilder().credential(auth).endpoint("https://" + accountName + ".blob.core.windows.net").buildClient();
         this.accountName = accountName;
         this.containerName = containerName;
@@ -63,20 +63,20 @@ public class AzureStorage extends BaseStorage {
      * @param accountName The storage account name
      * @param containerName The name of the container within the storage account
      */
-    public AzureStorage(final TokenCredential auth, final String accountName, final String containerName, String basePath) {
+    public AzureStorage(final TokenCredential auth, final String accountName, final String containerName, final String basePath) {
         this.client = new BlobServiceClientBuilder().credential(auth).endpoint("https://" + accountName + ".blob.core.windows.net").buildClient();
         this.accountName = accountName;
         this.containerName = containerName;
         this.basePath = basePath;
     }
 
-    public AzureStorage(Properties properties) {
+    public AzureStorage(final Properties properties) {
         // storageprovider.azure.accountname
         // storageprovider.azure.accountkey
         // storageprovider.azure.containername
         // storageprovider.azure.basepath
 
-        String error = validateProperties(properties);
+        final String error = validateProperties(properties);
         if (!error.isEmpty()) {
             throw new IllegalStateException(error);
         }
@@ -144,7 +144,7 @@ public class AzureStorage extends BaseStorage {
         return blobURL.toString();
     }
 
-    private String validateProperties(Properties propertiesFile) {
+    private String validateProperties(final Properties propertiesFile) {
         String error = "";
 
         // storageprovider.azure.accountname

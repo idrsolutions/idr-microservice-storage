@@ -26,7 +26,7 @@ public class GCPStorage extends BaseStorage {
      * @param projectID The project ID Containing the bucket
      * @param bucketName The name of the bucket that the converted files should be uploaded to
      */
-    public GCPStorage(final String projectID, final String bucketName, String basePath) {
+    public GCPStorage(final String projectID, final String bucketName, final String basePath) {
         // Will fetch from the "GOOGLE_APPLICATION_CREDENTIALS" environment variable
         this.storage = StorageOptions.newBuilder().setProjectId(projectID).build().getService();
         this.projectID = projectID;
@@ -41,8 +41,8 @@ public class GCPStorage extends BaseStorage {
      * @param bucketName The name of the bucket that the converted files should be uploaded to
      * @throws IOException if it cannot find or access the credentialsPath
      */
-    public GCPStorage(final String credentialsPath, final String projectID, final String bucketName, String basePath) throws IOException {
-        GoogleCredentials credentials;
+    public GCPStorage(final String credentialsPath, final String projectID, final String bucketName, final String basePath) throws IOException {
+        final GoogleCredentials credentials;
 
         try (FileInputStream fileStream = new FileInputStream(credentialsPath)) {
             credentials = GoogleCredentials.fromStream(fileStream).createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
@@ -54,7 +54,7 @@ public class GCPStorage extends BaseStorage {
         this.basePath = basePath;
     }
 
-    public GCPStorage(Properties properties) throws IOException {
+    public GCPStorage(final Properties properties) throws IOException {
         // storageprovider.gcp.credentialspath
         // storageprovider.gcp.projectid
         // storageprovider.gcp.bucketname
@@ -89,7 +89,7 @@ public class GCPStorage extends BaseStorage {
     }
 
     @Override
-    public String put(InputStream fileToUpload, long fileSize, String fileName, String uuid) {
+    public String put(final InputStream fileToUpload, final long fileSize, final String fileName, final String uuid) {
         try {
             final String basePath = !this.basePath.isEmpty() ? this.basePath + "/" : "";
             final Blob blob = storage.createFrom(BlobInfo.newBuilder(bucketName, basePath + uuid + "/" + fileName).build(), fileToUpload, Storage.BlobWriteOption.detectContentType());
@@ -100,7 +100,7 @@ public class GCPStorage extends BaseStorage {
         return null;
     }
 
-    private String validateProperties(Properties propertiesFile) {
+    private String validateProperties(final Properties propertiesFile) {
         String error = "";
 
         // storageprovider.gcp.credentialspath

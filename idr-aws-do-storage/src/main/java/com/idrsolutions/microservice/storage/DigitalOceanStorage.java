@@ -34,13 +34,13 @@ public class DigitalOceanStorage extends AWSStorage {
         super(AmazonS3ClientBuilder.standard().withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://" + region + ".digitaloceanspaces.com", region)).withCredentials(credentialsProvider).build(), bucketName, basePath);
     }
 
-    public DigitalOceanStorage(Properties properties) {
+    public DigitalOceanStorage(final Properties properties) {
         // storageprovider.do.region
         // storageprovider.do.accesskey
         // storageprovider.do.secretkey
         // storageprovider.do.bucketname
 
-        String error = validateProperties(properties);
+        final String error = validateProperties(properties);
         if (!error.isEmpty()) {
             throw new IllegalStateException(error);
         }
