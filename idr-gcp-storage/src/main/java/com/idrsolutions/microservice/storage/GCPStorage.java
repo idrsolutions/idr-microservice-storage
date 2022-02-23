@@ -95,7 +95,7 @@ public class GCPStorage extends BaseStorage {
             final Blob blob = storage.createFrom(BlobInfo.newBuilder(bucketName, basePath + uuid + "/" + fileName).build(), fileToUpload, Storage.BlobWriteOption.detectContentType());
             return blob.signUrl(30, TimeUnit.MINUTES, Storage.SignUrlOption.withV4Signature()).toString();
         } catch (final IOException e) {
-            e.printStackTrace();
+            LOG.severe("Failed to upload to GCP: " + e.getMessage());
         }
         return null;
     }
