@@ -148,10 +148,14 @@ public class OracleStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.oracle.ociconfigfilepath
-        final String ociconfigfilepath = propertiesFile.getProperty("storageprovider.oracle.ociconfigfilepath");
+        String ociconfigfilepath = propertiesFile.getProperty("storageprovider.oracle.ociconfigfilepath");
         if (ociconfigfilepath == null || ociconfigfilepath.isEmpty()) {
             error += "storageprovider.oracle.ociconfigfilepath must have a value\n";
         } else {
+            if (ociconfigfilepath.startsWith("~")) {
+                ociconfigfilepath = System.getProperty("user.home") + ociconfigfilepath.substring(1);
+                propertiesFile.setProperty("storageprovider.oracle.ociconfigfilepath", ociconfigfilepath);
+            }
             File configFile = new File(ociconfigfilepath);
             if (!configFile.exists() || !configFile.isFile() || !configFile.canRead()) {
                 error += "storageprovider.oracle.ociconfigfilepath must point to a valid config file that can be accessed";
