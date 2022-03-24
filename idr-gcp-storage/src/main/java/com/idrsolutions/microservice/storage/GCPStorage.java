@@ -104,10 +104,14 @@ public class GCPStorage extends BaseStorage {
         String error = "";
 
         // storageprovider.gcp.credentialspath
-        final String credentialspath = propertiesFile.getProperty("storageprovider.gcp.credentialspath");
+        String credentialspath = propertiesFile.getProperty("storageprovider.gcp.credentialspath");
         if (credentialspath == null || credentialspath.isEmpty()) {
             error += "storageprovider.gcp.credentialspath must have a value\n";
         } else {
+            if (credentialspath.startsWith("~")) {
+                credentialspath = System.getProperty("user.home") + credentialspath.substring(1);
+                propertiesFile.setProperty("storageprovider.gcp.credentialspath", credentialspath);
+            }
             File credentialsFile = new File(credentialspath);
             if (!credentialsFile.exists() || !credentialsFile.isFile() || !credentialsFile.canRead()) {
                 error += "storageprovider.gcp.credentialspath must point to a valid credentials file that can be accessed";
