@@ -1,0 +1,9 @@
+                        IDRSolutions Microservice Remote Storage Utility
+                        ================================================
+
+Please visit the IDRSolutions implementations of the base microservice for projects compatible with this utility:
+  * https://github.com/idrsolutions/buildvu-microservice-example
+  * https://github.com/idrsolutions/formvu-microservice-example
+  * https://github.com/idrsolutions/jpedal-microservice-example
+
+Copyright 2022 - 2023 IDRsolutions
